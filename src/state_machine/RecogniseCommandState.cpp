@@ -97,7 +97,11 @@ bool RecogniseCommandState::run()
             // all done, move to next state
             Serial.println("3 seconds has elapsed - finishing recognition request");
             // final new line to finish off the request
+            
             Intent intent = m_speech_recogniser->getResults();
+            delete m_speech_recogniser;
+            uint32_t free_ram = esp_get_free_heap_size();
+            Serial.printf("Free ram after delete %d\n", free_ram);
             IntentResult intentResult = m_intent_processor->processIntent(intent);
             switch (intentResult)
             {
@@ -123,7 +127,7 @@ bool RecogniseCommandState::run()
 void RecogniseCommandState::exitState()
 {
     // clean up the speech recognizer client as it takes up a lot of RAM
-    delete m_speech_recogniser;
+    //delete m_speech_recogniser;
     m_speech_recogniser = NULL;
     uint32_t free_ram = esp_get_free_heap_size();
     Serial.printf("Free ram after request %d\n", free_ram);

@@ -11,7 +11,7 @@
 #include "Speaker.h"
 #include "IndicatorLight.h"
 #include "connectWiFi.h"
-#include "handleFB.h"
+//#include "handleFB.h"
 
 //extern WebServer server(80);
 
@@ -90,8 +90,8 @@ void setup()
     	handleClient();
   	}  
 
-	handleFB *fireBase = new handleFB();
-		
+	//handleFB *fireBase = new handleFB();
+	
 
 	Serial.printf("Total heap: %d\n", ESP.getHeapSize());
 	Serial.printf("Free heap: %d\n", ESP.getFreeHeap());
@@ -117,7 +117,7 @@ void setup()
 	IndicatorLight *indicator_light = new IndicatorLight();
 
 	// and the intent processor
-	IntentProcessor *intent_processor = new IntentProcessor(speaker,fireBase);
+	IntentProcessor *intent_processor = new IntentProcessor(speaker);
 
 
 	// create our application

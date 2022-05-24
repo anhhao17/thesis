@@ -3,7 +3,7 @@
 
 #include <map>
 #include "WitAiChunkedUploader.h"
-
+#include "Firebase.h"
 class Speaker;
 class handleFB;
 
@@ -21,12 +21,13 @@ private:
     IntentResult turnOnDevice(const Intent &intent);
     IntentResult tellJoke();
     IntentResult life();
-    handleFB *m_firebase;
+    
     Speaker *m_speaker;
+    FireBase *m_fire_base;
 
 public:
-    IntentProcessor(Speaker *speaker, handleFB *firebase);
-    
+    IntentProcessor(Speaker *speaker);
+    ~IntentProcessor();
     IntentResult processIntent(const Intent &intent);
 };
 

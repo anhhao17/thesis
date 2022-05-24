@@ -71,29 +71,33 @@ Intent WitAiChunkedUploader::getResults()
     if (status == 200)
     {
         StaticJsonDocument<500> filter;
-        filter["entities"]["device:device"][0]["value"] = true;
-        filter["entities"]["device:device"][0]["confidence"] = true;
+        filter["entities"]["room:room"][0]["value"] = true;
+        filter["entities"]["room:room"][0]["confidence"] = true;
+        filter["entities"]["num:num"][0]["value"] = true;
+        filter["entities"]["num:num"][0]["confidence"] = true;
         filter["text"] = true;
         filter["intents"][0]["name"] = true;
         filter["intents"][0]["confidence"] = true;
-        filter["traits"]["wit$on_off"][0]["value"] = true;
-        filter["traits"]["wit$on_off"][0]["confidence"] = true;
+        filter["traits"]["bat_tat"][0]["value"] = true;
+        filter["traits"]["bat_tat"][0]["confidence"] = true;
         StaticJsonDocument<500> doc;
         deserializeJson(doc, *m_wifi_client, DeserializationOption::Filter(filter));
 
         const char *text = doc["text"];
         const char *intent_name = doc["intents"][0]["name"];
         float intent_confidence = doc["intents"][0]["confidence"];
-        const char *device_name = doc["entities"]["device:device"][0]["value"];
-        float device_confidence = doc["entities"]["device:device"][0]["confidence"];
-        const char *trait_value = doc["traits"]["wit$on_off"][0]["value"];
-        float trait_confidence = doc["traits"]["wit$on_off"][0]["confidence"];
+        const char *device_name = doc["entities"]["room:room"][0]["value"];
+        const char *device_num = doc["entities"]["num:num"][0]["value"];
+        float device_confidence = doc["entities"]["room:room"][0]["confidence"];
+        const char *trait_value = doc["traits"]["bat_tat"][0]["value"];
+        float trait_confidence = doc["traits"]["bat_tat"][0]["confidence"];
 
         return Intent{
             .text = (text ? text : ""),
             .intent_name = (intent_name ? intent_name : ""),
             .intent_confidence = intent_confidence,
             .device_name = (device_name ? device_name : ""),
+            .device_num = (device_num ? device_num : ""),
             .device_confidence = device_confidence,
             .trait_value = (trait_value ? trait_value : ""),
             .trait_confidence = trait_confidence};

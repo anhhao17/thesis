@@ -12,6 +12,7 @@ typedef struct
     std::string intent_name;
     float intent_confidence;
     std::string device_name;
+    std::string device_num;
     float device_confidence;
     std::string trait_value;
     float trait_confidence;
