@@ -53,7 +53,7 @@ I2SSampler::I2SSampler()
 
 void I2SSampler::start(i2s_port_t i2s_port, i2s_config_t &i2s_config, TaskHandle_t processor_task_handle)
 {
-    Serial.println("Starting i2s");
+    Serial.printf("INFO: file: %s, func: %s:%d, msg: Start I2S\n",__FILE__,__func__,__LINE__);
     m_i2s_port = i2s_port;
     m_processor_task_handle = processor_task_handle;
     //install and start i2s driver

@@ -22,10 +22,10 @@ void DetectWakeWordState::enterState()
 {
     // Create our neural network
     m_nn = new NeuralNetwork();
-    Serial.println("Created Neral Net");
+   // Serial.println("Created Neral Net");
     // create our audio processor
     m_audio_processor = new AudioProcessor(AUDIO_LENGTH, WINDOW_SIZE, STEP_SIZE, POOLING_SIZE);
-    Serial.println("Created audio processor");
+    //Serial.println("Created audio processor");
 
     m_number_of_detections = 0;
 }
@@ -43,6 +43,7 @@ bool DetectWakeWordState::run()
     m_audio_processor->get_spectrogram(reader, input_buffer);
     // finished with the sample reader
     delete reader;
+    
     // get the prediction for the spectrogram
     float output = m_nn->predict();
     long end = millis();
@@ -77,6 +78,6 @@ void DetectWakeWordState::exitState()
     m_nn = NULL;
     delete m_audio_processor;
     m_audio_processor = NULL;
-    uint32_t free_ram = esp_get_free_heap_size();
-    Serial.printf("Free ram after DetectWakeWord cleanup %d\n", free_ram);
+    //uint32_t free_ram = esp_get_free_heap_size();
+    //Serial.printf("Free ram after DetectWakeWord cleanup %d\n", free_ram);
 }

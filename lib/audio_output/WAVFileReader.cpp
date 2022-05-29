@@ -34,6 +34,7 @@ WAVFileReader::WAVFileReader(const char *file_name, bool repeat)
     // sanity check the bit depth
     if (wav_header.bit_depth != 16)
     {
+         Serial.printf("ERROR: file: %s, func: %s:%d, msg: Find Device\n",__FILE__,__func__,__LINE__);
         Serial.printf("ERROR: bit depth %d is not supported please use 16 bit signed integer\n", wav_header.bit_depth);
     }
     if (wav_header.sample_rate != 16000)

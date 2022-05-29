@@ -17,8 +17,8 @@ enum IntentResult
 class IntentProcessor
 {
 private:
-    //std::map<std::string, int> m_device_to_pin;
-    IntentResult turnOnDevice(const Intent &intent);
+    std::vector<String> device;
+    IntentResult turnOnDevice(const Intent &intent, bool status);
     IntentResult tellJoke();
     IntentResult life();
     
@@ -26,9 +26,11 @@ private:
     FireBase *m_fire_base;
 
 public:
+    void deleteFirebase();
     IntentProcessor(Speaker *speaker);
     ~IntentProcessor();
-    IntentResult processIntent(const Intent &intent);
+    IntentResult processIntent(Intent &intent);
+    
 };
 
 #endif

@@ -1,58 +1,37 @@
 #include <Arduino.h>
 #include "IntentProcessor.h"
 #include "Speaker.h"
+#include <algorithm>
 //#include "handleFB.h"
 IntentProcessor::IntentProcessor(Speaker *speaker) 
 {
     m_speaker = speaker;
+   
     //setupFB();
 }
 
 //Send data to firebase
-IntentResult IntentProcessor::turnOnDevice(const Intent &intent)
+IntentResult IntentProcessor::turnOnDevice(const Intent &intent,bool status)
 {
     if (intent.intent_confidence < 0.8)
     {
-        Serial.printf("Only %.f%% certain on intent\n", 100 * intent.intent_confidence);
+        Serial.printf("INFO: file: %s, func: %s:%d, msg: Only %.f%% certain on intent\n",__FILE__,__func__,__LINE__,100 * intent.intent_confidence);
         return FAILED;
     }
-    if (intent.device_name.empty())
-    {
-        Serial.println("No device found");
-        return FAILED;
-    }
-    if (intent.device_confidence < 0.8)
-    {
-        Serial.printf("Only %.f%% certain on device\n", 100 * intent.device_confidence);
-        return FAILED;
-    }
-    if (intent.trait_value.empty())
-    {
-        Serial.println("Can't work out the intent action");
-        return FAILED;
-    }
-    if (intent.trait_confidence < 0.8)
-    {
-        Serial.printf("Only %.f%% certain on trait\n", 100 * intent.trait_confidence);
-        return FAILED;
-    }
-    m_fire_base = new FireBase();
-    bool is_turn_on = intent.trait_value == "bat";
-    
-    /* Serial.printf("Total heap: %d\n", ESP.getHeapSize());
-        Serial.printf("Free heap: %d\n", ESP.getFreeHeap());
-        
-        Serial.printf("livingroom/%d",is_turn_on);
-            //m_firebase->sendData("livingroom/1",is_turn_on); */
-    Serial.printf("file: %s, func: %s.47",__FILE__,__func__);
-    if (intent.device_name == "khách" || intent.device_name == "livingroom" )
-        m_fire_base->sendData("livingroom",is_turn_on);
-    if(intent.device_name == "ngủ" || intent.device_name == "bedroom")
-        m_fire_base->sendData("bedroom",is_turn_on);
-    if(intent.device_name == "tắm" || intent.device_name == "bathroom" )
-        m_fire_base->sendData("bathroom",is_turn_on);
 
-    // success!
+    for(int i = 0;i < numberOfDevice; i++){
+        if(intent.text.find(device[i].c_str())!=std::string::npos){
+           Serial.printf("INFO: file: %s, func: %s:%d, msg: Find Device\n",__FILE__,__func__,__LINE__);
+           char buff[10];
+           sprintf(buff, "%d/status", i);
+           m_fire_base->sendData(buff,status);
+           break;
+        }else Serial.printf("INFO: file: %s, func: %s:%d, msg: Cannot matches device id %d\n",__FILE__,__func__,__LINE__,i);
+
+    }
+    
+   
+    
     return SUCCESS;
 }
  
@@ -68,46 +47,65 @@ IntentResult IntentProcessor::life()
     return SILENT_SUCCESS;
 }
 
-IntentResult IntentProcessor::processIntent(const Intent &intent)
+IntentResult IntentProcessor::processIntent(Intent &intent)
 {
+    std::transform(intent.text.begin(),intent.text.end(),intent.text.begin(),::tolower);
+    //std::transform(intent.text.begin(),intent.text.end(),intent.text.begin(),::tolower);
+    m_fire_base = new FireBase();
     if (intent.text.empty())
     {
-        Serial.println("No text recognised");
+        Serial.printf("ERROR: file: %s, func: %s:%d, msg: No text recognise\n",__FILE__,__func__,__LINE__);
+        //Serial.println("No text recognised");
         return FAILED;
     }
-    Serial.printf("I heard \"%s\"\n", intent.text.c_str());
-    if (intent.intent_name.empty())
+    Serial.printf("INFO: file: %s, func: %s:%d, msg: Heard \"%s\"\n",__FILE__,__func__,__LINE__, intent.text.c_str());
+    
+    if (intent.text.find("cập nhật")!=std::string::npos) //can
     {
-        Serial.println("Can't work out what you want to do with the device...");
-        return FAILED;
+        //update firebase
+        device = m_fire_base->getData();
+        return SUCCESS;
     }
-    /* Serial.printf("Intent is %s\n", intent.intent_name.c_str());
-    Serial.printf("Intent is %s\n", intent.device_name.c_str());
-    Serial.printf("Intent is %s\n", intent.device_num.c_str());
-    Serial.printf("Intent is %s\n", intent.trait_value.c_str());
-    bool name = intent.device_name == "khách";
-    Serial.println(name); */
-    if (intent.intent_name == "on_off") //can
+    if(device.size()!=0){
+        /* if (!strncmp(intent.text.c_str(),"bật",3)){
+            return turnOnDevice(intent,true);
+        }
+        if(!strncmp(intent.text.c_str(),"tắt",3)){
+            return turnOnDevice(intent,false);
+        } */
+        if(intent.text.find("bật")!=std::string::npos)
+            return turnOnDevice(intent,true);
+        if(intent.text.find("tắt")!=std::string::npos)
+            return turnOnDevice(intent,false);
+    }
+
+    return FAILED;
+    
+    /* if (intent.intent_name == "on_off") //can
     {
         //send to firebase
         return turnOnDevice(intent);
     }
     if (intent.intent_name == "Tell_joke")
     {
+        
         return tellJoke();
     }
     if (intent.intent_name == "Life")
     {
+        
         return life();
-    }
+    } */
 
     return FAILED;
 }
-
-IntentProcessor::~IntentProcessor(){
+void IntentProcessor::deleteFirebase(){
     delete m_fire_base;
-    m_fire_base = NULL;
-    uint32_t free_ram = esp_get_free_heap_size();
-    Serial.printf("Free ram after firebase cleanup %d\n", free_ram);
+    m_fire_base = NULL; 
+}
+IntentProcessor::~IntentProcessor(){
+    delete m_speaker;
+    m_speaker = NULL;
+    
 
 }

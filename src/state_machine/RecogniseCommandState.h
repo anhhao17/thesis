@@ -27,9 +27,9 @@ private:
 
 public:
     RecogniseCommandState(I2SSampler *sample_provider, IndicatorLight *indicator_light, Speaker *speaker, IntentProcessor *intent_processor);
-    void enterState();
-    bool run();
-    void exitState();
+    void enterState() override;
+    bool run() override;
+    void exitState() override;
 };
 
 #endif

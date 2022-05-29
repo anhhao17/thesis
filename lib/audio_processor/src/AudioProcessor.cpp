@@ -17,6 +17,7 @@ AudioProcessor::AudioProcessor(int audio_length, int window_size, int step_size,
     {
         m_fft_size <<= 1;
     }
+    
     m_fft_input = static_cast<float *>(malloc(sizeof(float) * m_fft_size));
     m_energy_size = m_fft_size / 2 + 1;
     m_fft_output = static_cast<kiss_fft_cpx *>(malloc(sizeof(kiss_fft_cpx) * m_energy_size));

@@ -35,15 +35,15 @@ void RecogniseCommandState::enterState()
     m_elapsed_time = 0;
     m_last_audio_position = -1;
 
-    uint32_t free_ram = esp_get_free_heap_size();
-    Serial.printf("Free ram before connection %d\n", free_ram);
+    //uint32_t free_ram = esp_get_free_heap_size();
+   // Serial.printf("Free ram before connection %d\n", free_ram);
 
     m_speech_recogniser = new WitAiChunkedUploader(COMMAND_RECOGNITION_ACCESS_KEY);
 
     Serial.println("Enter Recognise State");
 
-    free_ram = esp_get_free_heap_size();
-    Serial.printf("Free ram after connection %d\n", free_ram);
+    //free_ram = esp_get_free_heap_size();
+    //Serial.printf("Free ram after connection %d\n", free_ram);
 }
 bool RecogniseCommandState::run()
 {
@@ -55,7 +55,7 @@ bool RecogniseCommandState::run()
     }
     if (m_last_audio_position == -1)
     {
-        // set to 1 seconds in the past the allow for the really slow connection time
+        
         m_last_audio_position = m_sample_provider->getCurrentWritePosition() - 16000;
     }
     // how many samples have been captured since we last ran
@@ -99,9 +99,11 @@ bool RecogniseCommandState::run()
             // final new line to finish off the request
             
             Intent intent = m_speech_recogniser->getResults();
+            
+            //uint32_t free_ram = esp_get_free_heap_size();
             delete m_speech_recogniser;
-            uint32_t free_ram = esp_get_free_heap_size();
-            Serial.printf("Free ram after delete %d\n", free_ram);
+            m_speech_recogniser = NULL;
+            //Serial.printf("Free ram after delete %d\n", free_ram);
             IntentResult intentResult = m_intent_processor->processIntent(intent);
             switch (intentResult)
             {
@@ -117,6 +119,7 @@ bool RecogniseCommandState::run()
             }
             // indicate that we are done
             m_indicator_light->setState(OFF);
+            m_intent_processor->deleteFirebase();
             return true;
         }
     }
@@ -126,9 +129,7 @@ bool RecogniseCommandState::run()
 
 void RecogniseCommandState::exitState()
 {
-    // clean up the speech recognizer client as it takes up a lot of RAM
-    //delete m_speech_recogniser;
-    m_speech_recogniser = NULL;
-    uint32_t free_ram = esp_get_free_heap_size();
-    Serial.printf("Free ram after request %d\n", free_ram);
+    
+    //uint32_t free_ram = esp_get_free_heap_size();
+   // Serial.printf("Free ram after request %d\n", free_ram);
 }

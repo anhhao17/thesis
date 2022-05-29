@@ -19,9 +19,9 @@ private:
 
 public:
     DetectWakeWordState(I2SSampler *sample_provider);
-    void enterState();
-    bool run();
-    void exitState();
+    void enterState() override;
+    bool run() override;
+    void exitState() override;
 };
 
 #endif

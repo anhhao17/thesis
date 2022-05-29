@@ -11,6 +11,7 @@
 #include "Speaker.h"
 #include "IndicatorLight.h"
 #include "connectWiFi.h"
+#include <algorithm>
 //#include "handleFB.h"
 
 //extern WebServer server(80);

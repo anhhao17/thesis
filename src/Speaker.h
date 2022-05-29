@@ -12,7 +12,6 @@ private:
     WAVFileReader *m_ready_ping;
     WAVFileReader *m_life;
     WAVFileReader *m_jokes[5];
-
     I2SOutput *m_i2s_output;
 
 public:
